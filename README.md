@@ -266,6 +266,102 @@ const result = await autoTOON.process(request, llmCall, {
 })
 ```
 
+
+## OpenCode Integration Notes
+
+### Important: How Hooks Actually Work
+
+The TOON hooks are **explicit wrappers for YOUR code**, not automatic interceptors for OpenCode's internal messages.
+
+#### What Works ✅
+
+**When YOU make LLM calls in your code:**
+```typescript
+import { autoTOON } from 'toon-format/hooks'
+
+// This works - you control the LLM call
+const result = await autoTOON.process(
+  { systemPrompt: '...', data: {...} },
+  async (processedReq) => {
+    return await myLLMClient.complete(processedReq)  // YOUR client
+  }
+)
+```
+
+#### What Does NOT Work ❌
+
+**Automatic interception of OpenCode's internal messages:**
+```typescript
+// This does NOT happen automatically
+// OpenCode's messages still use normal JSON
+
+// The hooks CANNOT:
+// - Automatically convert all OpenCode messages to TOON
+// - Intercept OpenCode's internal LLM calls
+// - Transform messages without explicit usage
+```
+
+### Why?
+
+OpenCode's plugin system uses **event-driven hooks**, not middleware:
+
+| Aspect | OpenCode Plugins | Express Middleware |
+|--------|------------------|-------------------|
+| Pattern | Event handlers | Request/Response pipeline |
+| Can transform data? | Limited | Yes |
+| Automatic execution? | No | Yes |
+| Access to LLM messages? | No | N/A |
+
+OpenCode hooks can:
+- ✅ React to events (`session.created`, `tool.execute.before`)
+- ✅ Intercept tool calls
+- ✅ Modify system prompts
+- ❌ Transform LLM request/response bodies automatically
+
+### OpenCode Plugin Hooks Available
+
+If you want to create an OpenCode plugin:
+
+```typescript
+// .opencode/plugin/toon-plugin.ts
+export const TOONPlugin = async ({ client }) => {
+  return {
+    // Intercept tool calls
+    "tool.execute.before": async (input, output) => {
+      if (input.tool === "your-custom-tool") {
+        // Modify arguments before execution
+      }
+    },
+    
+    // React to events
+    event: async ({ event }) => {
+      if (event.type === "session.created") {
+        // Do something when session starts
+      }
+    }
+  }
+}
+```
+
+**Note:** This won't automatically process OpenCode's LLM messages - it only works for your custom tools and event reactions.
+
+### Research Findings
+
+After researching oh-my-opencode and OpenCode's plugin system:
+
+1. **OpenCode uses event-driven hooks** - not middleware
+2. **No pipeline access** - Can't intercept/transform all messages
+3. **Skills are markdown** - Not executable code
+4. **Plugins are reactive** - Can't transform data flowing through core
+
+**Reference:**
+- [OpenCode Plugins Guide](https://gist.github.com/johnlindquist/0adf1032b4e84942f3e1050aba3c5e4a)
+- [OpenCode Plugin Docs](https://opencode.ai/docs/plugins/)
+- [oh-my-opencode Hooks](https://ohmyopencode.com/hooks/)
+
+### Recommendation
+
+Use TOON hooks **explicitly** in your code when making LLM calls. Don't expect automatic interception of OpenCode's internal messages.
 ## When to Use TOON
 
 | Data Structure | TOON Benefit |
