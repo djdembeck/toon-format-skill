@@ -1,6 +1,14 @@
 # TOON Format Skill for OpenCode
 
-Pre/post-processing middleware for LLM optimization using Token-Oriented Object Notation (TOON).
+Pre/post-processing middleware for LLM optimization using [Token-Oriented Object Notation (TOON)](https://github.com/toon-format/toon).
+
+## About TOON
+
+TOON is a compact, human-readable data format designed specifically for LLM input. It reduces token usage by ~40-54% while improving data retrieval accuracy.
+
+- **Original Format**: [github.com/toon-format/toon](https://github.com/toon-format/toon)
+- **Official Website**: [toonformat.dev](https://toonformat.dev)
+- **Specification**: [TOON Spec](https://github.com/toon-format/spec)
 
 ## Benefits
 
@@ -11,8 +19,22 @@ Pre/post-processing middleware for LLM optimization using Token-Oriented Object 
 
 ## Installation
 
+### For OpenCode
+
 ```bash
-cd /path/to/skill
+# Create skill directory
+mkdir -p ~/.config/opencode/skills/toon-format
+cd ~/.config/opencode/skills/toon-format
+
+# Clone or copy skill files
+git clone https://github.com/djdembeck/toon-format-skill .
+```
+
+### For Development
+
+```bash
+git clone https://github.com/djdembeck/toon-format-skill.git
+cd toon-format-skill
 bun install
 ```
 
@@ -168,3 +190,7 @@ const processor = new TOONProcessor({
 ## License
 
 MIT - See LICENSE file
+
+---
+
+Built with ❤️ using the [TOON Format](https://github.com/toon-format/toon)
