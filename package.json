@@ -1,0 +1,29 @@
+{
+  "name": "toon-format-skill",
+  "version": "1.0.0",
+  "description": "TOON (Token-Oriented Object Notation) pre/post-processing middleware for LLM optimization",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "test": "bun test",
+    "example:basic": "bun run examples/basic.ts",
+    "example:middleware": "bun run examples/middleware.ts"
+  },
+  "keywords": ["toon", "tokenization", "llm", "optimization", "serialization", "opencode"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@toon-format/toon": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/djdembeck/toon-format-skill"
+  },
+  "bugs": {
+    "url": "https://github.com/djdembeck/toon-format-skill/issues"
+  },
+  "homepage": "https://github.com/djdembeck/toon-format-skill"
+}

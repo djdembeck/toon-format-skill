@@ -1,0 +1,22 @@
+{
+  "$schema": "./skill.json",
+  "defaultOptions": {
+    "indent": 2,
+    "delimiter": "tab",
+    "lengthMarkers": true
+  },
+  "tokenCounting": {
+    "model": "auto-detect",
+    "fallbackToCharEstimate": true
+  },
+  "eligibility": {
+    "minTabularPercent": 60,
+    "maxNestedDepth": 2,
+    "minUniformityScore": 0.8
+  },
+  "processing": {
+    "autoAddInstructions": true,
+    "fallbackToJSON": true,
+    "strictDecoding": false
+  }
+}

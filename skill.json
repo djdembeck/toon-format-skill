@@ -1,0 +1,65 @@
+{
+  "name": "toon-format",
+  "version": "1.0.0",
+  "description": "TOON (Token-Oriented Object Notation) pre/post-processing middleware for LLM optimization",
+  "author": "OpenCode Community",
+  "license": "MIT",
+  "main": "index.ts",
+  "types": "index.ts",
+  "keywords": ["toon", "tokenization", "llm", "optimization", "serialization"],
+  "categories": ["data-processing", "llm-utilities"],
+  "config": {
+    "file": "toon-config.json",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "defaultOptions": {
+          "type": "object",
+          "properties": {
+            "indent": { "type": "number", "default": 2 },
+            "delimiter": { "type": "string", "enum": ["comma", "tab", "pipe"], "default": "tab" },
+            "lengthMarkers": { "type": "boolean", "default": true },
+            "replacer": { "type": "object" }
+          }
+        },
+        "tokenCounting": {
+          "type": "object",
+          "properties": {
+            "model": { "type": "string", "enum": ["gpt-5", "claude", "auto-detect"], "default": "auto-detect" },
+            "fallbackToCharEstimate": { "type": "boolean", "default": true }
+          }
+        },
+        "eligibility": {
+          "type": "object",
+          "properties": {
+            "minTabularPercent": { "type": "number", "default": 60 },
+            "maxNestedDepth": { "type": "number", "default": 2 },
+            "minUniformityScore": { "type": "number", "default": 0.8 }
+          }
+        },
+        "processing": {
+          "type": "object",
+          "properties": {
+            "autoAddInstructions": { "type": "boolean", "default": true },
+            "fallbackToJSON": { "type": "boolean", "default": true },
+            "strictDecoding": { "type": "boolean", "default": false }
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@toon-format/toon": "^2.1.0"
+  },
+  "engines": {
+    "opencode": ">=1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toon-format"
+  },
+  "bugs": {
+    "url": "https://github.com/toon-format/toon/issues"
+  },
+  "homepage": "https://toonformat.dev"
+}
