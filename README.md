@@ -40,6 +40,34 @@ bun install
 
 ## Quick Start
 
+### Using Hooks (Automatic)
+
+```typescript
+import { autoTOON } from 'toon-format'
+
+const result = await autoTOON.process(
+  {
+    systemPrompt: 'You are a data analyst.',
+    userMessage: 'Analyze this data.',
+    data: {
+      users: [
+        { id: 1, name: 'Alice', salary: 120000 },
+        { id: 2, name: 'Bob', salary: 80000 }
+      ]
+    }
+  },
+  async (processedRequest) => {
+    // Your LLM call here
+    return await llm.complete(processedRequest)
+  }
+)
+
+console.log(`Token savings: ${result.metrics.percentSaved.toFixed(1)}%`)
+console.log('Parsed response:', result.parsedResponse)
+```
+
+### Using TOONProcessor (Manual)
+
 ```typescript
 import { TOONProcessor } from 'toon-format'
 
@@ -49,16 +77,77 @@ const processor = new TOONProcessor()
 const { request, eligibility } = processor.preProcess({
   systemPrompt: 'You are a data analyst.',
   userMessage: 'Analyze this data.',
-  data: {
-    users: [
-      { id: 1, name: 'Alice', salary: 120000 },
-      { id: 2, name: 'Bob', salary: 80000 }
-    ]
-  }
+  data: { users: [...] }
 })
 
 // request.data is now TOON format with token savings
 console.log(`Token savings: ${request.metrics?.percentSaved.toFixed(1)}%`)
+```
+
+## Automatic Hooks
+
+The hooks API provides automatic pre/post-processing:
+
+### autoTOON.process()
+
+Full request/response cycle with automatic encoding/decoding:
+
+```typescript
+import { autoTOON } from 'toon-format'
+
+const result = await autoTOON.process(request, async (processedReq) => {
+  return await myLLMClient.complete(processedReq)
+})
+
+// Returns:
+// - result.originalRequest: original request
+// - result.toonRequest: TOON-encoded request
+// - result.metrics: token savings
+// - result.parsedResponse: decoded response
+// - result.tokenSavings: number of tokens saved
+```
+
+### withTOON() Wrapper
+
+Higher-order function for wrapping any async function:
+
+```typescript
+import { withTOON } from 'toon-format'
+
+const toonWrapped = withTOON(myLLMFunction, { logMetrics: true })
+const result = await toonWrapped(request)
+```
+
+### autoTOON.wrap()
+
+Wrap an existing LLM client:
+
+```typescript
+import { autoTOON } from 'toon-format'
+
+const toonClient = autoTOON.wrap(myOpenAIClient)
+const result = await toonClient.complete(request)
+```
+
+### autoTOON.middleware()
+
+Express/Fastify middleware:
+
+```typescript
+import { autoTOON } from 'toon-format'
+
+app.use(autoTOON.middleware())
+// Automatically encodes req.body.data and decodes responses
+```
+
+### useTOON() Hook
+
+For React or similar frameworks:
+
+```typescript
+import { useTOON } from 'toon-format'
+
+const { processWithTOON, wrap } = useTOON({ logMetrics: true })
 ```
 
 ## Core Functions
@@ -149,10 +238,11 @@ bun test
 
 ## Examples
 
-See [`examples/basic.ts`](examples/basic.ts) for usage examples:
+See [`examples/basic.ts`](examples/basic.ts) and [`examples/hooks.ts`](examples/hooks.ts) for usage examples:
 
 ```bash
 bun run examples/basic.ts
+bun run examples/hooks.ts
 ```
 
 ## Configuration
@@ -166,6 +256,13 @@ const processor = new TOONProcessor({
     maxNestedDepth: 4,        // Maximum nesting depth
     minUniformityScore: 0.8   // Minimum uniformity score
   }
+})
+
+// Or with hooks
+const result = await autoTOON.process(request, llmCall, {
+  minTabularPercent: 70,
+  maxNestedDepth: 3,
+  logMetrics: true
 })
 ```
 
